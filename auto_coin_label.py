@@ -1,8 +1,5 @@
 import cv2
-import numpy as np
-import random as rng
 import os
-from google.colab.patches import cv2_imshow
 from PIL import Image
 
 def write_label(label):
@@ -90,6 +87,7 @@ def coin_coords(filename):
 
 
 def main():
+  #change label
   label = "nickel"
   write_label(label)
   print("done")
