@@ -4,7 +4,7 @@ from PIL import Image
 
 def write_label(label):
   #change to dir of images to be labeled
-  directory = ("/home/andrew/coin/autolabel/images/")
+  directory = ("<ENTER DIR>")
   #counter = 0
   for filename in os.listdir(directory):
     f = os.path.join(directory, filename)
