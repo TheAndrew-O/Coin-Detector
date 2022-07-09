@@ -3,9 +3,9 @@ import os
 from PIL import Image
 
 def write_label(label):
-  #chnage to dir of images to be labeled
-  directory = ("/content/images")
-  counter = 0
+  #change to dir of images to be labeled
+  directory = ("/home/andrew/coin/autolabel/images/")
+  #counter = 0
   for filename in os.listdir(directory):
     f = os.path.join(directory, filename)
     # checking if it is a file
@@ -13,14 +13,15 @@ def write_label(label):
     if f.endswith(".jpg"):
       coords = coin_coords(f)
       if not coords:
-        print("dasd")
-        return
+        print("No coin found")
+        continue
       img = Image.open(f)
       # get width and height
       width = img.width
       height = img.height
       #remove extension, add counter, change to xml file
-      label_file = filename[:-4] + str(counter) + ".xml"
+      l_file = filename[:-4] + ".xml"
+      label_file = directory + l_file 
       fp = open(label_file, "w")
       fp.write("<annotation>\n")
       folder = "\t<folder>" + directory + "</folder>\n"
@@ -45,11 +46,11 @@ def write_label(label):
       fp.write("\t\t<truncated>0</truncated>\n")
       fp.write("\t\t<difficult>0</difficult>\n")
       fp.write("\t\t<bndbox>\n")
-      xmin = "\t\t\t<xmin>" + str(coords[0][0]) + "</xmin>\n"
-      ymin = "\t\t\t<ymin>"+ str(coords[0][1]) + "</ymin>\n"
-      xdim = coords[0][0] + coords[0][2]
+      xmin = "\t\t\t<xmin>" + str(coords[0]) + "</xmin>\n"
+      ymin = "\t\t\t<ymin>"+ str(coords[1]) + "</ymin>\n"
+      xdim = coords[0] + coords[2]
       xmax = "\t\t\t<xmax>" + str(xdim) + "</xmax>\n"
-      ydim = coords[0][1] + coords[0][3]
+      ydim = coords[1] + coords[3]
       ymax = "\t\t\t<ymax>" + str(ydim) + "</ymax>\n"
       fp.write(xmin)
       fp.write(ymin)
@@ -62,11 +63,12 @@ def write_label(label):
 
 def coin_coords(filename):
   coords = []
+  max_area = 0
   image = cv2.imread(filename)
   input_image_cpy = image.copy()
   gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
   avg = cv2.blur(gray_image,(10,10))
-  thresh = 155
+  thresh = 145
   maxValue = 255
  
   th, dst = cv2.threshold(avg, thresh, maxValue, cv2.THRESH_BINARY)
@@ -76,19 +78,23 @@ def coin_coords(filename):
   cnts = cnts[0] if len(cnts) == 2 else cnts[1]
   for c in cnts:
     x,y,w,h = cv2.boundingRect(c)
-    if(x > 1000 and w > 1000):
-      coords.append([x,y,w,h])
+    area = w * h
+    if(area > max_area):
+        max_area = area
+        coords = [x,y,w,h]
     #print("x:",x,"y:",y,"w:",w,"h:",h)
     cv2.rectangle(image, (x, y), (x + w, y + h), (0,0,255), 2)
 
-  #cv2_imshow(image)
+  #cv2.imshow(image)
+  #cv2.waitKey(0)
+  #cv2.destroyAllWindows()
   #print(coords)
   return coords
 
 
 def main():
   #change label
-  label = "nickel"
+  label = input("Enter label\n")
   write_label(label)
   print("done")
 
