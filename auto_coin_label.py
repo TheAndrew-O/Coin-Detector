@@ -65,15 +65,14 @@ def coin_coords(filename):
   coords = []
   max_area = 0
   image = cv2.imread(filename)
-  input_image_cpy = image.copy()
   gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
   avg = cv2.blur(gray_image,(10,10))
   thresh = 145
   maxValue = 255
  
-  th, dst = cv2.threshold(avg, thresh, maxValue, cv2.THRESH_BINARY)
+  _, dst = cv2.threshold(avg, thresh, maxValue, cv2.THRESH_BINARY)
 
-  ROI_number = 0
+  #ROI_number = 0
   cnts = cv2.findContours(dst, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
   cnts = cnts[0] if len(cnts) == 2 else cnts[1]
   for c in cnts:
